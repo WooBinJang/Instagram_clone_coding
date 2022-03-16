@@ -6,6 +6,7 @@ const Fauth = firebaseApp.auth();
 const Login = () => {
   const [email, setEmail] = useState(undefined);
   const [password, setPassword] = useState(undefined);
+  const [nickname, setNickname] = useState(undefined);
 
   const doLogin = (e) => {
     e.preventDefault();
@@ -29,7 +30,7 @@ const Login = () => {
             <div className="inp">
               <input
                 type="email"
-                placeholder="이메일을 입려하세요"
+                placeholder="이메일을 입력하세요"
                 required
                 onBlur={(e) => {
                   setEmail(e.target.value);

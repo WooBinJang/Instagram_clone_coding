@@ -1,24 +1,41 @@
 const firebaseApp = require("../config/firebaseMoudule");
-const expoess = require("express");
-const router = expoess.Router();
-const Fauth = firebaseApp.auth();
 
-router.get("/helloworld", (req, res) => {
-  const email = "abc@abc.com";
-  const password = "12345678";
+const express = require("express");
+const router = express.Router();
+const Fauth = firebaseApp.auth();
+const Fdatabase = firebaseApp.database();
+
+router.post("/user/new", (req, res) => {
+  const { email, password, nickname } = req.body;
+
+  console.log(email, password, nickname);
+
   Fauth.createUser({
     email: email,
     password: password,
-  })
-    .then((credential) => {
-      const { uid } = credential;
-      console.log(uid);
-    })
-    .catch((err) => {
-      console.log(err);
-    });
-  res.json({
-    meg: "welcome world",
+    displayName: nickname,
+  }).then((credential) => {
+    const { uid } = credential;
+
+    Promise.all([
+      Fdatabase.ref(`users/${uid}/profile`).set({
+        email: email,
+        nickname: nickname,
+        timestamp: Date.now(),
+      }),
+
+      Fdatabase.ref(`statics/nickname/${uid}`).set({ nickname }),
+    ])
+      .then(() => {
+        res.status(200).json({
+          msg: "유저가 만들어졌습니다.",
+        });
+      })
+      .catch((err) => {
+        res.status(400).json({
+          err,
+        });
+      });
   });
 });
 module.exports = router;

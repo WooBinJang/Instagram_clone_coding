@@ -1,11 +1,13 @@
 import React, { useState, useCallback } from 'react';
+import { useHistory } from 'react-router-dom';
 import './css/index.css';
-
 function Join() {
   const [email, setEmail] = useState(undefined);
   const [password, setPassword] = useState(undefined);
   const [nickname, setNickname] = useState(undefined);
   const [isNicknameExit, setisNicknameExit] = useState(false);
+
+  const history = useHistory();
 
   const createUser = useCallback(() => {
     if (email && nickname && password && password.length >= 8) {
@@ -19,12 +21,15 @@ function Join() {
         body: JSON.stringify({ email, nickname, password })
       })
         .then((res) => res.json())
-        .then(({ msg }) => console.log(msg))
+        .then(({ msg }) => {
+          console.log(msg);
+          history.push('/');
+        })
         .catch((err) => {
           console.log(err);
         });
     } else {
-      console.log('입력조건에 부합하지 않습니다.');
+      alert('입력조건에 부합하지 않습니다.');
     }
   }, [email, password, nickname]);
 

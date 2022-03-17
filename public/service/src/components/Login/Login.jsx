@@ -1,9 +1,15 @@
-import React, { useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './css/index.css';
 import firebaseApp from '@config/firebaseApp';
+import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { _UPDATE_HEADER_STATE } from '@dispatchers/layouts';
 
 const Fauth = firebaseApp.auth();
 const Login = () => {
+  const dispatch = useDispatch();
+  const history = useHistory();
+
   const [email, setEmail] = useState(undefined);
   const [password, setPassword] = useState(undefined);
   const [nickname, setNickname] = useState(undefined);
@@ -15,11 +21,29 @@ const Login = () => {
         // var user = credential.user;
         const { user } = credential;
         console.log(user);
+
+        dispatch({
+          type: _UPDATE_HEADER_STATE,
+          payload: true
+        });
+
+        history.push('/feed');
       })
       .catch((error) => {
         console.log(error);
       });
   };
+  const goJoin = useCallback(() => {
+    history.push('/join');
+  }, [history]);
+
+  // 헤더 부분
+  useEffect(() => {
+    dispatch({
+      type: _UPDATE_HEADER_STATE,
+      payload: false
+    });
+  }, [dispatch]);
   return (
     <div className="login">
       <div className="wrapper">
@@ -58,7 +82,7 @@ const Login = () => {
         <div className="go-join">
           <div className="title txt-bold">회원가입하기</div>
           <div className="asset">
-            <img src="/assets/welcome/arrow.svg" alt="회원가입하기" />
+            <img src="/assets/welcome/arrow.svg" alt="회원가입하기" onClick={goJoin} />
           </div>
         </div>
       </div>

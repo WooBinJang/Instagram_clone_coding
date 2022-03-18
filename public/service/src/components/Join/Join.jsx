@@ -1,16 +1,17 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import './css/index.css';
 function Join() {
+  const nicknames = useSelector((state) => state.config.service.nicknames);
   const [email, setEmail] = useState(undefined);
   const [password, setPassword] = useState(undefined);
   const [nickname, setNickname] = useState(undefined);
   const [isNicknameExit, setisNicknameExit] = useState(false);
-
   const history = useHistory();
 
   const createUser = useCallback(() => {
-    if (email && nickname && password && password.length >= 8) {
+    if (email && nickname && !isNicknameExit && password && password.length >= 8) {
       let url = '/user/new';
       fetch(url, {
         method: 'POST',
@@ -18,7 +19,11 @@ function Join() {
           'Content-type': 'application/json',
           'Allow-Control-Access-Origin': '*'
         },
-        body: JSON.stringify({ email, nickname, password })
+        body: JSON.stringify({
+          email,
+          nickname,
+          password
+        })
       })
         .then((res) => res.json())
         .then(({ msg }) => {
@@ -26,13 +31,23 @@ function Join() {
           history.push('/');
         })
         .catch((err) => {
-          console.log(err);
+          alert('입력조건에 부합하지 않습니다.');
         });
     } else {
       alert('입력조건에 부합하지 않습니다.');
     }
-  }, [email, password, nickname]);
+  }, [email, password, nickname, isNicknameExit, history]);
 
+  useEffect(() => {
+    if (nicknames.indexOf(nickname) !== -1) {
+      console.log('닉네임이 존재합니다.');
+      setisNicknameExit(true);
+    } else {
+      console.log('닉네임이 존재하지 않습니다.');
+      setisNicknameExit(false);
+    }
+    return () => {};
+  }, [nickname, nicknames]);
   return (
     <div className="join">
       <div className="wrapper">

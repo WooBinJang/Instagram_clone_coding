@@ -8,8 +8,6 @@ const Fdatabase = firebaseApp.database();
 router.post("/user/new", (req, res) => {
   const { email, password, nickname } = req.body;
 
-  console.log(email, password, nickname);
-
   Fauth.createUser({
     email: email,
     password: password,
@@ -24,7 +22,7 @@ router.post("/user/new", (req, res) => {
         timestamp: Date.now(),
       }),
 
-      Fdatabase.ref(`statics/nicknames/${uid}`).set({ nickname }),
+      Fdatabase.ref(`statics/nicknames/${uid}`).set(nickname),
     ])
       .then(() => {
         res.status(200).json({
@@ -37,5 +35,30 @@ router.post("/user/new", (req, res) => {
         });
       });
   });
+});
+
+router.post("/feed/new", (req, res) => {
+  const { feed, profile } = req.body;
+
+  Fdatabase.ref("feed")
+    .push({
+      feed,
+      profile,
+      timestamp: Date.now(),
+    })
+    .then(() => {
+      const fid = snapshot.key; // 무작위의 키값 반환
+      Fdatabase.ref(`user/${uid}/feed`).push({
+        fid, // 유저가 자기 글을 가지고 올 수 있게
+      });
+    })
+    .then(() => {
+      res.status(200).json({
+        msg: "피드가 올라갔습니다.",
+      });
+    })
+    .catch((err) => {
+      res.status(400).json({ err });
+    });
 });
 module.exports = router;

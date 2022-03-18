@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import '../styles/core.css';
@@ -13,17 +13,17 @@ const Fdatabase = firebaseApp.database();
 
 function App() {
   const isHeaderOpen = useSelector((state) => state.layouts.isHeaderOpen);
-
+  // 어떤 state 값을 쓰고 싶은지 선택하는 hook
   const dispatch = useDispatch();
-  const getNickNames = () => {
+  const getNickNames = useCallback(() => {
     //실시간으로 DB에서 데이터 가져오기
-    let nicknameRef = Fdatabase.database().ref('statics/nicknames'); //var
+    var nicknameRef = Fdatabase.ref('statics/nicknames'); //var
     nicknameRef.on('value', (snapshot) => {
       if (snapshot.exists()) {
-        console.log(snapshot.val());
+        // console.log(Object.values(snapshot.val()));
         dispatch({
           type: _NICKNAME_SERVICE_UPDATE_,
-          payload: snapshot.val() // 데이터값을 페이로드에 넘겨준다.
+          payload: Object.values(snapshot.val()) // 데이터값을 페이로드에 넘겨준다.
         });
       } else {
         dispatch({
@@ -32,9 +32,16 @@ function App() {
         });
       }
     });
-  };
+    return nicknameRef;
+  }, [dispatch]);
 
-  // 어떤 state 값을 쓰고 싶은지 선택하는 hook
+  useEffect(() => {
+    const nicknameRef = getNickNames();
+    return () => {
+      nicknameRef.off(); // DB에서 실시간 데이터 받기 끄기
+    };
+  }, [getNickNames]);
+
   return (
     <Router>
       {isHeaderOpen && <Header />}

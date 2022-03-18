@@ -10,7 +10,7 @@ const config = (state = initialState, { type, payload }) => {
       return {
         ...state,
         service: {
-          nicknames: [payload]
+          nicknames: [...payload]
         }
       };
     default:

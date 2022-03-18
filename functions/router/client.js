@@ -24,7 +24,7 @@ router.post("/user/new", (req, res) => {
         timestamp: Date.now(),
       }),
 
-      Fdatabase.ref(`statics/nickname/${uid}`).set({ nickname }),
+      Fdatabase.ref(`statics/nicknames/${uid}`).set({ nickname }),
     ])
       .then(() => {
         res.status(200).json({

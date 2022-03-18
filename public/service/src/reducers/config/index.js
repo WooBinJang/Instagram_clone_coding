@@ -1,17 +1,20 @@
 const initialState = {
-  identification: {
-    version: '0.0.1'
+  service: {
+    // 닉네임 정보들이 들어갈 자리
+    nicknames: []
   }
-}
-const config = (state = initialState, {
-  type,
-  payload
-}) => {
+};
+const config = (state = initialState, { type, payload }) => {
   switch (type) {
-    case '':
-      return
+    case '@config/UPDATE_NICKNAMES':
+      return {
+        ...state,
+        service: {
+          nicknames: [payload]
+        }
+      };
     default:
-      return state
+      return state;
   }
-}
-export default config
+};
+export default config;

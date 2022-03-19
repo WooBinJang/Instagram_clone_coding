@@ -1,15 +1,48 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import './css/index.css';
 
 function MainFeed() {
+  const [context, setContext] = useState(undefined);
+  const [feedImage, setFeedImage] = useState(undefined);
+  const makeFeed = useCallback(
+    (e) => {
+      e.preventDefault();
+      console.log(context);
+      // let url = 'feed.new';
+      // fetch(url, {
+      //   method: 'POST',
+      //   headers: {
+      //     'Content-type': 'application/json',
+      //     'Allow-Control-Access-Origin': '*'
+      //   },
+      //   body: JSON.stringify({
+      //     feed: {
+      //       context
+      //     },
+      //     profile: {
+      //       uid
+      //     }
+      //   })
+      // })
+      //   .then((res) => res.json)
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
+    },
+    [context]
+  );
   return (
     <div className="mainfeed">
       <div className="wrapper">
         <div className="feed-list">
-          <div className="write-feed">
+          <form className="write-feed" onSubmit={makeFeed}>
             <div className="profile-image"></div>
             <div className="inp">
-              <input type="text" placeholder="내용을 입력하세요" />
+              <input
+                type="text"
+                placeholder="내용을 입력하세요"
+                onChange={(e) => setContext(e.target.value)}
+              />
             </div>
             <div className="get-image">
               <label htmlFor="get-image-input">
@@ -17,7 +50,7 @@ function MainFeed() {
               </label>
               <input type="file" id="get-image-input" />
             </div>
-          </div>{' '}
+          </form>{' '}
           {/* e:쓰기  */}
           <div className="feed">
             <div className="top">

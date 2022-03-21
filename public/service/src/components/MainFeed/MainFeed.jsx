@@ -1,35 +1,40 @@
 import React, { useCallback, useState } from 'react';
+import { useSelector } from 'react-redux';
 import './css/index.css';
 
 function MainFeed() {
   const [context, setContext] = useState(undefined);
   const [feedImage, setFeedImage] = useState(undefined);
+  const session = useSelector((state) => state.auth.session);
+
   const makeFeed = useCallback(
     (e) => {
       e.preventDefault();
-      console.log(context);
-      // let url = 'feed.new';
-      // fetch(url, {
-      //   method: 'POST',
-      //   headers: {
-      //     'Content-type': 'application/json',
-      //     'Allow-Control-Access-Origin': '*'
-      //   },
-      //   body: JSON.stringify({
-      //     feed: {
-      //       context
-      //     },
-      //     profile: {
-      //       uid
-      //     }
-      //   })
-      // })
-      //   .then((res) => res.json)
-      //   .catch((err) => {
-      //     console.log(err);
-      //   });
+      if (session) {
+        const { uid } = session;
+        let url = 'feed.new';
+        fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-type': 'application/json',
+            'Allow-Control-Access-Origin': '*'
+          },
+          body: JSON.stringify({
+            feed: {
+              context
+            },
+            profile: {
+              uid
+            }
+          })
+        })
+          .then((res) => res.json())
+          .then(({ msg }) => {
+            console.log(msg);
+          });
+      }
     },
-    [context]
+    [context, session]
   );
   return (
     <div className="mainfeed">

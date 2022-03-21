@@ -8,8 +8,11 @@ import Login from './Login/Login';
 import MainFeed from './MainFeed/MainFeed';
 import firebaseApp from '@config/firebaseApp';
 import { _NICKNAME_SERVICE_UPDATE_ } from '@dispatchers/config';
+import { _UPDATE_SESSION } from '@dispatchers/auth';
+import { _UPDATE_HEADER_STATE } from '@dispatchers/layouts';
 
 const Fdatabase = firebaseApp.database();
+const Fauth = firebaseApp.auth();
 
 function App() {
   const isHeaderOpen = useSelector((state) => state.layouts.isHeaderOpen);
@@ -20,7 +23,6 @@ function App() {
     var nicknameRef = Fdatabase.ref('statics/nicknames'); //var
     nicknameRef.on('value', (snapshot) => {
       if (snapshot.exists()) {
-        // console.log(Object.values(snapshot.val()));
         dispatch({
           type: _NICKNAME_SERVICE_UPDATE_,
           payload: Object.values(snapshot.val()) // 데이터값을 페이로드에 넘겨준다.
@@ -42,6 +44,27 @@ function App() {
     };
   }, [getNickNames]);
 
+  useEffect(() => {
+    Fauth.onAuthStateChanged((users) => {
+      // 로그인 된 현재 사용자 리턴
+      if (users) {
+        const { uid, displayName, email } = users;
+        dispatch({
+          type: _UPDATE_HEADER_STATE,
+          payload: true
+        });
+        dispatch({
+          type: _UPDATE_SESSION,
+          payload: { uid, displayName, email }
+        });
+      } else {
+        dispatch({
+          type: _UPDATE_SESSION,
+          payload: undefined
+        });
+      }
+    });
+  }, [dispatch]);
   return (
     <Router>
       {isHeaderOpen && <Header />}

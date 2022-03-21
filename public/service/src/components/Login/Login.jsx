@@ -18,9 +18,7 @@ const Login = () => {
     e.preventDefault();
     Fauth.signInWithEmailAndPassword(email, password)
       .then((credential) => {
-        // var user = credential.user;
         const { user } = credential;
-        console.log(user);
 
         dispatch({
           type: _UPDATE_HEADER_STATE,
@@ -35,15 +33,8 @@ const Login = () => {
   };
   const goJoin = useCallback(() => {
     history.push('/join');
-  }, [history]);
+  }, [history, email, dispatch, password]);
 
-  // 헤더 부분
-  useEffect(() => {
-    dispatch({
-      type: _UPDATE_HEADER_STATE,
-      payload: false
-    });
-  }, [dispatch]);
   return (
     <div className="login">
       <div className="wrapper">

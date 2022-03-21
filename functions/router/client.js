@@ -38,27 +38,36 @@ router.post("/user/new", (req, res) => {
 });
 
 router.post("/feed/new", (req, res) => {
-  const { feed, profile } = req.body;
-
+  const { feed, profile, timestamp } = req.body;
+  const { uid } = profile;
   Fdatabase.ref("feed")
     .push({
       feed,
       profile,
-      timestamp: Date.now(),
+      timestamp,
     })
-    .then(() => {
-      const fid = snapshot.key; // 무작위의 키값 반환
-      Fdatabase.ref(`user/${uid}/feed`).push({
-        fid, // 유저가 자기 글을 가지고 올 수 있게
-      });
-    })
-    .then(() => {
-      res.status(200).json({
-        msg: "피드가 올라갔습니다.",
-      });
+    .then((snapshot) => {
+      const fid = snapshot.key; // 무작위의 키다 만들어진 후에 그 키를 반환
+      Fdatabase.ref(`users/${uid}/feed`)
+        .push({
+          //유저가자기 글을 가지고 올때 필요
+          fid,
+        })
+        .then(() => {
+          res.status(200).json({
+            msg: "피드가 올라갔습니다",
+          });
+        })
+        .catch((err) => {
+          res.status(400).json({
+            err,
+          });
+        });
     })
     .catch((err) => {
-      res.status(400).json({ err });
-    });
-});
+      res.status(400).json({
+        err,
+      });
+    }); //catch
+}); //post
 module.exports = router;

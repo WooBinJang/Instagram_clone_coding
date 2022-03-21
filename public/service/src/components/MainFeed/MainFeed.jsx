@@ -1,6 +1,26 @@
+import firebaseApp from '@config/firebaseApp';
 import React, { useCallback, useState } from 'react';
 import { useSelector } from 'react-redux';
 import './css/index.css';
+
+const Fstorage = firebaseApp.storage();
+const uploadImageToStorage = (data, timestamp) => {
+  return new Promise((resolve, reject) => {
+    Fstorage.ref(`feed/${timestamp}/feed.jpg`)
+      .putString(data.split(',')[1], 'base64', {
+        contentType: 'image/jpg'
+      })
+      .then((snapshot) => {
+        snapshot.ref.getDownloadURL().then((url) => {
+          console.log('이미지 업로드 완료');
+          resolve(url);
+        });
+      })
+      .catch((err) => {
+        reject(err);
+      });
+  });
+};
 
 function MainFeed() {
   const [context, setContext] = useState(undefined);
@@ -8,11 +28,19 @@ function MainFeed() {
   const session = useSelector((state) => state.auth.session);
 
   const makeFeed = useCallback(
-    (e) => {
+    async (e) => {
       e.preventDefault();
-      if (session) {
+      if (session && (context || feedImage)) {
+        const nowTime = Date.now();
+        let downloadUrl;
+        if (feedImage) {
+          // 파이어베이스 스토리지에 업로드 후 업로드된 URL을 받아서 fetch로 값을 넘겨준다.
+          downloadUrl = await uploadImageToStorage(feedImage, nowTime).catch((err) => {
+            console.log(err);
+          });
+        }
         const { uid } = session;
-        let url = 'feed.new';
+        let url = '/feed/new';
         fetch(url, {
           method: 'POST',
           headers: {
@@ -21,21 +49,35 @@ function MainFeed() {
           },
           body: JSON.stringify({
             feed: {
-              context
+              context,
+              image: downloadUrl
             },
             profile: {
               uid
-            }
+            },
+            timestamp: nowTime
           })
         })
           .then((res) => res.json())
           .then(({ msg }) => {
             console.log(msg);
+            alert(msg);
+          })
+          .catch((err) => {
+            console.log(err);
           });
-      }
+      } //if
     },
-    [context, session]
+    [context, session, feedImage]
   );
+  const getDataFromImage = useCallback((e) => {
+    const filelist = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      setFeedImage(e.target.result);
+    };
+    reader.readAsDataURL(filelist);
+  }, []);
   return (
     <div className="mainfeed">
       <div className="wrapper">
@@ -53,7 +95,7 @@ function MainFeed() {
               <label htmlFor="get-image-input">
                 <img src="/assets/main/add-image.svg" alt="이미지추가하기" />
               </label>
-              <input type="file" id="get-image-input" />
+              <input type="file" id="get-image-input" onChange={getDataFromImage} />
             </div>
           </form>{' '}
           {/* e:쓰기  */}

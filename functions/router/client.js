@@ -7,7 +7,7 @@ const Fdatabase = firebaseApp.database();
 
 router.post("/user/new", (req, res) => {
   const { email, password, nickname } = req.body;
-
+  console.log(email);
   Fauth.createUser({
     email: email,
     password: password,
@@ -69,5 +69,45 @@ router.post("/feed/new", (req, res) => {
         err,
       });
     }); //catch
-}); //post
+});
+
+router.post("/user/profile/image", (req, res) => {
+  const { uid } = req.body;
+  Fdatabase.ref(`users/${uid}/profile/image`)
+    .once("value", (snapshot) => {
+      if (snapshot.exists()) {
+        res.status(200).json({
+          image: snapshot.val(),
+        });
+      } else {
+        res.status(200).json({
+          image: undefined,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(400).json({ err });
+    });
+});
+
+router.post("/user/feed", (req, res) => {
+  const { uid } = req.body;
+  Fdatabase.ref("feed")
+    .orderByChild("profile/uid")
+    .equalTo(uid)
+    .once("value", (snapshot) => {
+      if (snapshot.exists()) {
+        const value = snapshot.val(); // 내가 쓴 글만 반환
+        res.status(200).json({
+          feed: Object.values(value), // 오브젝트의 형태를 배열로 반환
+          msg: "작성한 피드가 있습니다.",
+        });
+      } else {
+        res.status(200).json({
+          feed: [],
+          msg: "직성된 피드가 없습니다.",
+        });
+      }
+    });
+});
 module.exports = router;

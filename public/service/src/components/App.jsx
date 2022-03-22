@@ -10,6 +10,7 @@ import firebaseApp from '@config/firebaseApp';
 import { _NICKNAME_SERVICE_UPDATE_ } from '@dispatchers/config';
 import { _UPDATE_SESSION } from '@dispatchers/auth';
 import { _UPDATE_HEADER_STATE } from '@dispatchers/layouts';
+import Profile from './Profile/Profile';
 
 const Fdatabase = firebaseApp.database();
 const Fauth = firebaseApp.auth();
@@ -72,6 +73,7 @@ function App() {
         <Route path="/" exact component={Login} />
         <Route path="/join" exact component={Join} />
         <Route path="/feed" exact component={MainFeed} />
+        <Route path="/profile" exact component={Profile} />
       </Switch>
     </Router>
   );

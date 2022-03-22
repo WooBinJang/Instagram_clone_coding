@@ -1,9 +1,10 @@
 import firebaseApp from '@config/firebaseApp';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { useSelector } from 'react-redux';
 import './css/index.css';
 
 const Fstorage = firebaseApp.storage();
+
 const uploadImageToStorage = (data, timestamp) => {
   return new Promise((resolve, reject) => {
     Fstorage.ref(`feed/${timestamp}/feed.jpg`)
@@ -26,6 +27,7 @@ function MainFeed() {
   const [context, setContext] = useState(undefined);
   const [feedImage, setFeedImage] = useState(undefined);
   const session = useSelector((state) => state.auth.session);
+  const contextRef = useRef();
 
   const makeFeed = useCallback(
     async (e) => {
@@ -60,7 +62,7 @@ function MainFeed() {
         })
           .then((res) => res.json())
           .then(({ msg }) => {
-            console.log(msg);
+            contextRef.current.value = '';
             alert(msg);
           })
           .catch((err) => {
@@ -88,7 +90,9 @@ function MainFeed() {
               <input
                 type="text"
                 placeholder="내용을 입력하세요"
+                ref={contextRef}
                 onChange={(e) => setContext(e.target.value)}
+                on
               />
             </div>
             <div className="get-image">

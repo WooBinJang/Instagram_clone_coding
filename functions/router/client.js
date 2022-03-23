@@ -4,6 +4,9 @@ const express = require("express");
 const router = express.Router();
 const Fauth = firebaseApp.auth();
 const Fdatabase = firebaseApp.database();
+const cors = require("cors");
+router.use(cors());
+router.options("*", cors);
 
 router.post("/user/new", (req, res) => {
   const { email, password, nickname } = req.body;
@@ -98,9 +101,10 @@ router.post("/user/feed", (req, res) => {
     .once("value", (snapshot) => {
       if (snapshot.exists()) {
         const value = snapshot.val(); // 내가 쓴 글만 반환
+        const feedLength = Object.keys(value).length;
         res.status(200).json({
           feed: Object.values(value), // 오브젝트의 형태를 배열로 반환
-          msg: "작성한 피드가 있습니다.",
+          msg: `작성한피드가 ${feedLength}개 있습니다.`,
         });
       } else {
         res.status(200).json({

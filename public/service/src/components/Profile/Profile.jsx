@@ -1,6 +1,7 @@
 import firebaseApp from '@config/firebaseApp';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import Feed from '../Feed/Feed';
 import './css/index.css';
 const Fstorage = firebaseApp.storage();
 const Fdatabase = firebaseApp.database();
@@ -8,12 +9,12 @@ const Fdatabase = firebaseApp.database();
 function Profile() {
   const [userImage, setUserImage] = useState(undefined);
   const session = useSelector((state) => state.auth.session);
-
+  const [feeds, setFeeds] = useState([]);
   // 현재 유저의 피드를 받아오는 요청 함수
   const getUserFeed = useCallback(() => {
     if (session) {
       const { uid } = session;
-      let url = `/user/feed`;
+      let url = `https://us-central1-sns-service-db71d.cloudfunctions.net/clientApi/user/feed`;
       fetch(url, {
         method: 'POST',
         headers: {
@@ -26,19 +27,18 @@ function Profile() {
       })
         .then((res) => res.json())
         .then(({ feed, msg }) => {
-          console.log(feed);
+          setFeeds(feed.reverse());
         })
         .catch((err) => {
           console.log(err);
         });
     }
   }, [session]);
-
   //서버에 프로필 이미지 정보 요청 함수
   const getUserProfileImageFromServer = useCallback(() => {
     if (session) {
       const { uid } = session;
-      let url = `user/profile/image`;
+      let url = `https://us-central1-sns-service-db71d.cloudfunctions.net/clientApi/user/profile/image`;
       fetch(url, {
         method: 'POST',
         headers: {
@@ -135,135 +135,9 @@ function Profile() {
           <div className="feed-list">
             <div className="title txt-bold">작성한 글</div>
             <div className="feeds">
-              <div className="feed">
-                <div className="top">
-                  <div className="profile-image"> </div>
-                  <div className="profile-desc">
-                    <div className="nickname txt-bold">HONGGIDONG </div>
-                    <div className="timestamp">08:15 pm ,yesterday </div>
-                  </div>
-                </div>
-                <div className="contents">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum quo ab ullam
-                  nostrum corrupti corporis laudantium nihil commodi reiciendis. Magnam similique
-                  natus voluptates dolore magni, blanditiis necessitatibus eum sequi modi!
-                </div>
-                <div className="bottom">
-                  <div className="like">
-                    <div className="asset">
-                      <img src="/assets/feed/like-dac.svg" alt="좋아요" />
-                    </div>
-                    <div className="count txt-bold">25k</div>
-                  </div>
-                  {/*like*/}
-                  <div className="comment">
-                    <div className="asset">
-                      <img src="/assets/feed/comment.svg" alt="댓글" />
-                    </div>
-                    <div className="count">25k</div>
-                  </div>
-                  {/*comment*/}
-                </div>
-              </div>
-              {/*feed 1 */}
-
-              <div className="feed">
-                <div className="top">
-                  <div className="profile-image"> </div>
-                  <div className="profile-desc">
-                    <div className="nickname txt-bold">HONGGIDONG </div>
-                    <div className="timestamp">08:15 pm ,yesterday </div>
-                  </div>
-                </div>
-                <div className="contents">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum quo ab ullam
-                  nostrum corrupti corporis laudantium nihil commodi reiciendis. Magnam similique
-                  natus voluptates dolore magni, blanditiis necessitatibus eum sequi modi!
-                  <div className="image"></div>
-                </div>
-                <div className="bottom">
-                  <div className="like">
-                    <div className="asset">
-                      <img src="/assets/feed/like-dac.svg" alt="좋아요" />
-                    </div>
-                    <div className="count txt-bold">25k</div>
-                  </div>
-                  {/*like*/}
-                  <div className="comment">
-                    <div className="asset">
-                      <img src="/assets/feed/comment.svg" alt="댓글" />
-                    </div>
-                    <div className="count">25k</div>
-                  </div>
-                  {/*comment*/}
-                </div>
-              </div>
-              {/*imagefeed2  */}
-
-              <div className="feed">
-                <div className="top">
-                  <div className="profile-image"> </div>
-                  <div className="profile-desc">
-                    <div className="nickname txt-bold">HONGGIDONG </div>
-                    <div className="timestamp">08:15 pm ,yesterday </div>
-                  </div>
-                </div>
-                <div className="contents">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum quo ab ullam
-                  nostrum corrupti corporis laudantium nihil commodi reiciendis. Magnam similique
-                  natus voluptates dolore magni, blanditiis necessitatibus eum sequi modi!
-                </div>
-                <div className="bottom">
-                  <div className="like">
-                    <div className="asset">
-                      <img src="/assets/feed/like-dac.svg" alt="좋아요" />
-                    </div>
-                    <div className="count txt-bold">25k</div>
-                  </div>
-                  {/*like*/}
-                  <div className="comment">
-                    <div className="asset">
-                      <img src="/assets/feed/comment.svg" alt="댓글" />
-                    </div>
-                    <div className="count">25k</div>
-                  </div>
-                  {/*comment*/}
-                </div>
-              </div>
-              {/*feed 1 */}
-
-              <div className="feed">
-                <div className="top">
-                  <div className="profile-image"> </div>
-                  <div className="profile-desc">
-                    <div className="nickname txt-bold">HONGGIDONG </div>
-                    <div className="timestamp">08:15 pm ,yesterday </div>
-                  </div>
-                </div>
-                <div className="contents">
-                  Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum quo ab ullam
-                  nostrum corrupti corporis laudantium nihil commodi reiciendis. Magnam similique
-                  natus voluptates dolore magni, blanditiis necessitatibus eum sequi modi!
-                  <div className="image"></div>
-                </div>
-                <div className="bottom">
-                  <div className="like">
-                    <div className="asset">
-                      <img src="/assets/feed/like-dac.svg" alt="좋아요" />
-                    </div>
-                    <div className="count txt-bold">25k</div>
-                  </div>
-                  {/*like*/}
-                  <div className="comment">
-                    <div className="asset">
-                      <img src="/assets/feed/comment.svg" alt="댓글" />
-                    </div>
-                    <div className="count">25k</div>
-                  </div>
-                  {/*comment*/}
-                </div>
-              </div>
-              {/*imagefeed2  */}
+              {feeds.map((item, idx) => {
+                return <Feed key={idx} {...item} />;
+              })}
             </div>
             {/* feeds */}
           </div>
@@ -271,22 +145,22 @@ function Profile() {
           <div className="profile-info-desc">
             <div className="desc">
               <div className="title txt-bold">좋아요</div>
-              <div className="count">250,12</div>
+              <div className="count">0</div>
             </div>
             {/*desc  */}
             <div className="desc">
               <div className="title txt-bold">팔로워</div>
-              <div className="count">246,00</div>
+              <div className="count">0</div>
             </div>
             {/*desc  */}
             <div className="desc">
               <div className="title txt-bold">포스트</div>
-              <div className="count">120</div>
+              <div className="count">{feeds.length}</div>
             </div>
             {/*desc  */}
             <div className="desc">
               <div className="title txt-bold">친구</div>
-              <div className="count">236</div>
+              <div className="count">0</div>
             </div>
             {/*desc  */}
           </div>{' '}

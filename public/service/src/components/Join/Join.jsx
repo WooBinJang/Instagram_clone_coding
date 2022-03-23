@@ -12,7 +12,7 @@ function Join() {
 
   const createUser = useCallback(() => {
     if (email && nickname && !isNicknameExit && password && password.length >= 8) {
-      let url = '/user/new';
+      let url = 'https://us-central1-sns-service-db71d.cloudfunctions.net/clientApi/user/new';
       fetch(url, {
         method: 'POST',
         headers: {

@@ -42,7 +42,7 @@ function MainFeed() {
           });
         }
         const { uid } = session;
-        let url = '/feed/new';
+        let url = 'https://us-central1-sns-service-db71d.cloudfunctions.net/clientApi/feed/new';
         fetch(url, {
           method: 'POST',
           headers: {
